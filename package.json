@@ -25,6 +25,8 @@
     "three": "^0.159.0"
   },
   "devDependencies": {
+    "@tweenjs/tween.js": "^21.0.0",
+    "dat.gui": "^0.7.9",
     "vite": "^5.0.10"
   }
 }
