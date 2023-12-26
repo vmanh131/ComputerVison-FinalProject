@@ -11,7 +11,7 @@ import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 		const params = {
 			alignment: 1,
-			cohesion: 0.9,
+			cohesion: 1,
 			separation: 1
 		};
 
