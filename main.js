@@ -1,111 +1,264 @@
-//Import the THREE.js library
-import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js";
-// To allow for the camera to move around the scene
-import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
-// To allow for importing the .gltf file
-import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
-
-//Create a Three.JS Scene
-const scene = new THREE.Scene();
-//create a new camera with positions and angles
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-//Keep the 3D object on a global variable so we can access it later
-let object;
-let turtle;
-
-//OrbitControls allow the camera to move around the scene
-let controls;
-
-const loader = new GLTFLoader();
-const clock = new THREE.Clock();
-var mixers = [];  
-var basePath = './3DModel/'; 
-
-var models = [
-  { name: 'schoolfish', position: { x: -6.5, y: -7, z: 6 }, rotation: -Math.PI/4, scale: 20 },
-  { name: 'turtle', position: { x: -4.5, y: -5, z: 4 }, rotation: Math.PI, scale: 20 },
-  { name: 'shark', position: { x: 5, y: -5, z: 4 }, rotation: Math.PI/4, scale: 20 },
-  // { name: 'octopus', position: { x: 5, y: -5, z: 4 }, rotation: Math.PI/4, scale: 200 },
-  { name: 'dolphin', position: { x: 5, y: -5, z: 4 }, rotation: Math.PI/1.5, scale: 20 },
-];
-
-models.forEach(model => {
-  loader.load(
-    basePath + model.name + '/scene.gltf',
-    function (gltf) {
-      var object = gltf.scene;
-      object.scale.set(model.scale, model.scale, model.scale);
-      object.position.set(model.position.x, model.position.y, model.position.z);
-      object.rotation.y = model.rotation;
-      scene.add(object);
-      var mixer = new THREE.AnimationMixer(object);
-      mixers.push(mixer);
-      gltf.animations.forEach((clip) => {
-        mixer.clipAction(clip).play();
-      });
-    },
-    function (xhr) {
-      console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    },
-    function (error) {
-      console.error(error);
-    }
-  );
-});
+// import * as THREE from 'three';
+// import * as YUKA from 'yuka';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
 
-//Instantiate a new renderer and set its size
-const renderer = new THREE.WebGLRenderer({ alpha: true }); //Alpha: true allows for the transparent background
-renderer.setSize(window.innerWidth, window.innerHeight);
+// const renderer = new THREE.WebGLRenderer({alpha: true});
 
-//Add the renderer to the DOM
-document.getElementById("container3D").appendChild(renderer.domElement);
+// renderer.setSize(window.innerWidth, window.innerHeight);
 
-// //Set how far the camera will be from the 3D model
- camera.position.z = 100;
+// document.body.appendChild(renderer.domElement);
 
-//Add lights to the scene, so we can actually see the 3D model
-const topLight = new THREE.DirectionalLight(0xffffff, 2); // (color, intensity)
-topLight.position.set(1000, 1000, 1000) //top-left-ish
-topLight.castShadow = true;
-scene.add(topLight);
+// const scene = new THREE.Scene();
 
-// const ambientLight = new THREE.AmbientLight(0x333333, objToRender === "dino" ? 5 : 1);
-// scene.add(ambientLight);
+// renderer.setClearColor(0xffffff);
 
-//This adds controls to the camera, so we can rotate / zoom it with the mouse
-controls = new OrbitControls(camera, renderer.domElement);
+// const camera = new THREE.PerspectiveCamera(
+//     75,
+//     window.innerWidth / window.innerHeight,
+//     0.1,
+//     1000
+// );
 
+// camera.position.set(0, 10, 0);
+// camera.lookAt(scene.position);
+// let controls;
+// controls = new OrbitControls(camera, renderer.domElement);
+// // const vehicleGeometry = new THREE.ConeGeometry(0.1, 0.5, 8);
+// // vehicleGeometry.rotateX(Math.PI * 0.5);
+// // const vehicleMaterial = new THREE.MeshNormalMaterial();
+// // const vehicleMesh = new THREE.Mesh(vehicleGeometry, vehicleMaterial);
+// // vehicleMesh.matrixAutoUpdate = false;
+// // scene.add(vehicleMesh);
 
-//Render the scene
-function animate() {
-  requestAnimationFrame(animate);
-  //Here we could add some code to update the scene, adding some automatic movement
-
-  var delta = clock.getDelta(); // Lấy thời gian đã trôi qua từ lần cuối cùng hàm này được gọi
-
-  for (var i = 0; i < mixers.length; i++) { // Cập nhật tất cả các mixer
-    mixers[i].update(delta);
-  }
-  // const delta = clock.getDelta();
-  // mixer.update(delta);
-  camera.updateProjectionMatrix();
-  renderer.render(scene, camera);
-}
-
-//Add a listener to the window, so we can resize the window and the camera
-// window.addEventListener("resize", function () {
-//   camera.aspect = window.innerWidth / window.innerHeight;
-//   camera.updateProjectionMatrix();
-//   renderer.setSize(window.innerWidth, window.innerHeight);
-// });
-
-// //add mouse position listener, so we can make the eye move
-// document.onmousemove = (e) => {
-//   mouseX = e.clientX;
-//   mouseY = e.clientY;
+// // const vehicle = new YUKA.Vehicle();
+// // vehicle.setRenderComponent(vehicleMesh, sync);
+// //const vehicle = new YUKA.Vehicle();
+// const loader = new GLTFLoader();
+// const entityManager = new YUKA.EntityManager();
+// function sync(entity, renderComponent) {
+//     renderComponent.matrix.copy(entity.worldMatrix);
 // }
 
-//Start the 3D rendering
-animate();
+
+// let mixer;
+// loader.load('./3DModel/shark/scene.gltf', function (gltf)
+// {
+//         const object = gltf.scene;
+//         const clips = gltf.animations;
+//         const fishes = new THREE.AnimationObjectGroup();
+//         mixer = new THREE.AnimationMixer(fishes);
+//         const clip = clips.find(clip => clip.name === 'Action');
+//         //const clip = new THREE.AnimationClip.findByName(clips, 'Action');
+//         var action = mixer.clipAction(clip);
+//         action.play();
+//       for (let i = 0; i < 5; i++){
+        
+//         var fishClone = SkeletonUtils.clone(object);
+//         fishClone.matrixAutoUpdate = false;
+        
+        
+//         //object.position.set(model.position.x, model.position.y, model.position.z);
+//         //object.rotation.y = - Math.PI/2;   
+//         scene.add(fishClone);
+//         fishes.add(fishClone);
+
+//         const vehicle = new YUKA.Vehicle();
+//         vehicle.scale = new YUKA.Vector3(0.5, 0.5, 0.5);
+//         vehicle.setRenderComponent(fishClone, sync);
+
+//         const wanderBehavior = new YUKA.WanderBehavior();
+//         vehicle.steering.add(wanderBehavior);
+
+//         entityManager.add(vehicle);
+
+//         vehicle.position.x = 2.5 - Math.random() * 5;
+//         vehicle.position.z = 2.5 - Math.random() * 5;
+//         vehicle.rotation.fromEuler(0, 2 * Math.PI * Math.random(), 0)
+//         // var mixer = new THREE.AnimationMixer(object);
+//         // mixers.push(mixer);
+//         // gltf.animations.forEach((clip) => {
+//         //   mixer.clipAction(clip).play();
+//         // });
+
+        
+//         //vehicle.setRenderComponent(fishClone, sync);
+//       }
+// }  
+// )  
+
+// // const path = new YUKA.Path();
+// // path.add( new YUKA.Vector3(-4, 0, 4));
+// // path.add( new YUKA.Vector3(-6, 0, 0));
+// // path.add( new YUKA.Vector3(-4, 0, -4));
+// // path.add( new YUKA.Vector3(0, 0, 0));
+// // path.add( new YUKA.Vector3(4, 0, -4));
+// // path.add( new YUKA.Vector3(6, 0, 0));
+// // path.add( new YUKA.Vector3(4, 0, 4));
+// // path.add( new YUKA.Vector3(0, 0, 6));
+
+// // path.loop = true;
+
+// // vehicle.position.copy(path.current());
+
+// // //vehicle.maxSpeed = 3;
+
+// // const followPathBehavior = new YUKA.FollowPathBehavior(path, 0.5);
+// // vehicle.steering.add(followPathBehavior);
+
+// // const onPathBehavior = new YUKA.OnPathBehavior(path);
+// // onPathBehavior.radius = 2;
+// // vehicle.steering.add(onPathBehavior);
+
+// // const entityManager = new YUKA.EntityManager();
+// // entityManager.add(vehicle);
+
+// // const position = [];
+// // for(let i = 0; i < path._waypoints.length; i++) {
+// //     const waypoint = path._waypoints[i];
+// //     position.push(waypoint.x, waypoint.y, waypoint.z);
+// // }
+
+// // const lineGeometry = new THREE.BufferGeometry();
+// // lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
+
+// // const lineMaterial = new THREE.LineBasicMaterial({color: 0xFFFFFF});
+// // const lines = new THREE.LineLoop(lineGeometry, lineMaterial);
+// // scene.add(lines);
+
+// const time = new YUKA.Time();
+// const clock = new THREE.Clock();
+
+// const ambientLight = new THREE.AmbientLight(0xfffffff, 2);
+// scene.add(ambientLight);
+
+
+// function animate() {
+//     const clockDelta = clock.getDelta();
+//     if(mixer)
+//         mixer.update(clockDelta);
+//     const delta = time.update().getDelta();
+//     entityManager.update(delta);
+//     renderer.render(scene, camera);
+// }
+
+// renderer.setAnimationLoop(animate);
+
+// window.addEventListener('resize', function() {
+//     camera.aspect = window.innerWidth / window.innerHeight;
+//     camera.updateProjectionMatrix();
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+// });
+
+
+import * as THREE from 'three';
+import * as YUKA from 'yuka';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+
+const renderer = new THREE.WebGLRenderer({antialias: true});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+
+renderer.setClearColor(0xA3A3A3);
+
+const camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.set(0, 10, 15);
+camera.lookAt(scene.position);
+
+const ambientLight = new THREE.AmbientLight(0x333333);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+directionalLight.position.set(0, 10, 10);
+scene.add(directionalLight);
+
+const vehicle = new YUKA.Vehicle();
+
+function sync(entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix);
+}
+
+const path = new YUKA.Path();
+path.add( new YUKA.Vector3(-6, 0, 4));
+path.add( new YUKA.Vector3(-12, 0, 0));
+path.add( new YUKA.Vector3(-6, 0, -12));
+path.add( new YUKA.Vector3(0, 0, 0));
+path.add( new YUKA.Vector3(8, 0, -8));
+path.add( new YUKA.Vector3(10, 0, 0));
+path.add( new YUKA.Vector3(4, 0, 4));
+path.add( new YUKA.Vector3(0, 0, 6));
+
+path.loop = true;
+
+vehicle.position.copy(path.current());
+
+vehicle.maxSpeed = 3;
+
+const followPathBehavior = new YUKA.FollowPathBehavior(path, 3);
+vehicle.steering.add(followPathBehavior);
+
+const onPathBehavior = new YUKA.OnPathBehavior(path);
+//onPathBehavior.radius = 2;
+vehicle.steering.add(onPathBehavior);
+
+const entityManager = new YUKA.EntityManager();
+entityManager.add(vehicle);
+
+
+const loader = new GLTFLoader();
+loader.load('./3DModel/shark/scene.gltf', function(gltf) {
+    const model = gltf.scene;
+    //model.rotation.y = - Math.PI;
+    scene.add(model);
+    model.matrixAutoUpdate = false;
+    vehicle.scale = new YUKA.Vector3(2, 2, 2);
+    vehicle.setRenderComponent(model, sync);
+});
+
+// const vehicleGeometry = new THREE.ConeBufferGeometry(0.1, 0.5, 8);
+// vehicleGeometry.rotateX(Math.PI * 0.5);
+// const vehicleMaterial = new THREE.MeshNormalMaterial();
+// const vehicleMesh = new THREE.Mesh(vehicleGeometry, vehicleMaterial);
+// vehicleMesh.matrixAutoUpdate = false;
+// scene.add(vehicleMesh);
+
+const position = [];
+for(let i = 0; i < path._waypoints.length; i++) {
+    const waypoint = path._waypoints[i];
+    position.push(waypoint.x, waypoint.y, waypoint.z);
+}
+
+const lineGeometry = new THREE.BufferGeometry();
+lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(position, 3));
+
+const lineMaterial = new THREE.LineBasicMaterial({color: 0xFFFFFF});
+const lines = new THREE.LineLoop(lineGeometry, lineMaterial);
+scene.add(lines);
+
+const time = new YUKA.Time();
+
+function animate() {
+    const delta = time.update().getDelta();
+    entityManager.update(delta);
+    renderer.render(scene, camera);
+}
+
+renderer.setAnimationLoop(animate);
+
+window.addEventListener('resize', function() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
