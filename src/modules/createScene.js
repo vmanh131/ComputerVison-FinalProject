@@ -14,7 +14,7 @@ const textureLoader = new THREE.TextureLoader();
 
 export function createScene() {
     scene = new THREE.Scene();
-    var planeGeometry = new THREE.PlaneGeometry(200, 200);
+    var planeGeometry = new THREE.PlaneGeometry(15, 15);
     var platformTexture = textureLoader.load('textures/sand_texture_2.jpg');
     var planeMaterial = new THREE.MeshBasicMaterial({ map: platformTexture });
     var surface = new THREE.Mesh( planeGeometry, planeMaterial );
@@ -24,16 +24,16 @@ export function createScene() {
     scene.add(surface);
 
     // const light = new THREE.DirectionalLight(0xffffff, 2);
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff,5);
-    scene.add(hemisphereLight);
+    // const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff,5);
+    // scene.add(hemisphereLight);
         
         //scene.add(tempMesh);
     
         const gtlfLoader = new GLTFLoader();
         gtlfLoader.load('./scenes/coral-reef.glb'
         ,function ( gltf ) {
-            gltf.scene.scale.set(30, 30, 30);
-            gltf.scene.position.set(0, -177, 0);
+            gltf.scene.scale.set(1, 1, 1);
+            gltf.scene.position.set(0, -7.8, 0);
             gltf.scene.rotation.set(0, 45 * Math.PI / 180, 0);
             scene.add(gltf.scene);
         },
