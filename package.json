@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/vmanh131/ComputerVison-FinalProject#readme",
   "dependencies": {
+    "fastnoise-lite": "^1.1.0",
     "three": "^0.159.0"
   },
   "devDependencies": {

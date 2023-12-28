@@ -1,11 +1,13 @@
 import * as THREE from 'three';
-import * as TWEEN from '@tweenjs/tween.js';
-import { coralDict, loadModelAtPath } from './modules/load_models.js';
-import { createScene } from './modules/createScene.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { GLTFLoader  } from 'three/addons/loaders/GLTFLoader.js';
+import * as TWEEN from '@tweenjs/tween.js';
+
+// let noise = new FastNoiseLite();
+// noise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+
 
 function loadFile(filename) {
   return new Promise((resolve, reject) => {
@@ -44,11 +46,17 @@ scene.add(camera);
 causticsScene.add(camera);
 
 const causticsCamera = new THREE.PerspectiveCamera(70, 1, 0.01, 100);
-causticsCamera.position.set(0, 0, 20);
+causticsCamera.position.set(-5, 0, 20);
 causticsCamera.rotation.set(0, 0, Math.PI / 2);
 causticsCamera.up.set(0, 0, 1);
 //scene.add(causticsCamera);
 causticsScene.add(causticsCamera);
+
+var tween = new TWEEN.Tween(causticsCamera.position);
+tween.to({x: 5}, 20000).repeat(Infinity);
+
+tween.start();
+
 
 //scene.add(causticsGroup);
 
@@ -67,13 +75,12 @@ const temporaryRenderTarget = new THREE.WebGLRenderTarget(width, height);
 
 // const spotLight = new THREE.DirectionalLight(0xffffff , 1);
 
-const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
-directLightCaustics.position.set( 0, 0, 20 );
-const spotLight = new THREE.SpotLight( 0xffffff, 150, 25, 0.53, 1, 1 );
+const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0x080820, 15 );
+const spotLight = new THREE.SpotLight( 0xffffff, 200, 25, 0.53, 1, 1 );
 spotLight.position.set( 0, 0, 20 );
 
 
-spotLight.map = temporaryRenderTarget.texture;
+//spotLight.map = temporaryRenderTarget.texture;
 
 spotLight.castShadow = true;
 spotLight.shadow.mapSize.width = 1024;
@@ -200,8 +207,8 @@ const coralLoaded = new Promise((resolve, reject) => {
       gtlfLoader.load('./scenes/coral-reef.glb'
     ,function ( gltf ) {
         gltf.scene.scale.set(1, 1, 1);
-        gltf.scene.position.set(0, 0, -6);
-        gltf.scene.rotation.set(Math.PI / 2, 0, 0);
+        gltf.scene.position.set(0, 0, -5.8);
+        gltf.scene.rotation.set(Math.PI / 2, Math.PI / 4, 0);
         scene.add(gltf.scene);
 
         const model = gltf.scene;
@@ -247,13 +254,13 @@ const textureLoader = new THREE.TextureLoader();
 const sand_texture = textureLoader.load('textures/sand_texture_2.jpg' ); 
 
 const white_texture = textureLoader.load('textures/caustics_texture.png' );
-const caustics_texture = textureLoader.load('textures/Caustics1_small.png' );
+const caustics_texture = textureLoader.load('textures/CausticsRender_003.png' );
 
 // immediately use the texture for material creation 
 
 const material = new THREE.MeshStandardMaterial( { map: sand_texture } );
 //material.skinning = true;
-const planeGeometry = new THREE.PlaneGeometry(12, 12);
+const planeGeometry = new THREE.PlaneGeometry(10, 10);
 const planeMesh = new THREE.Mesh(planeGeometry, material);
 planeMesh.position.set(0, 0, 0);
 planeMesh.receiveShadow = true;
@@ -261,20 +268,16 @@ planeMesh.receiveShadow = true;
 //causticsScene.add(planeMesh);
 scene.add(planeMesh);
 
-
-loadFile('shaders/voronoi/fragment.glsl').then((fragment) => {
-  const materialCaustics = new THREE.ShaderMaterial( {
-    uniforms: {
-      uv: { value: [0, 0] },
-      t: 1
-    },
-    fragmentShader: fragment
-  } );
-
-  const causticsMesh = new THREE.Mesh(planeGeometry, materialCaustics);
-  causticsMesh.position.set(0, 0, 5);
+const materialCaustics = new THREE.MeshStandardMaterial( { map: caustics_texture, transparent: true, alphaTest: 0.7});
+const causticsMesh = new THREE.Mesh(planeGeometry, materialCaustics);
+  causticsMesh.position.set(5, 0, 5);
   causticsScene.add(causticsMesh);
-});
+
+  const causticsMesh2 = new THREE.Mesh(planeGeometry, materialCaustics);
+  causticsMesh2.position.set(-5, 0, 5);
+  causticsScene.add(causticsMesh2);
+
+  spotLight.map = temporaryRenderTarget.texture;
 
 //causticsMesh.castShadow = true;
 //scene.add(causticsMesh);
@@ -298,7 +301,7 @@ function animate() {
   renderer.render(scene, camera);
 
   controls.update();
-
+  TWEEN.update();
   stats.end();
 
   requestAnimationFrame(animate);
