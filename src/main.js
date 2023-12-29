@@ -68,9 +68,9 @@ tween.to({x: 5}, 20000).repeat(Infinity);
 tween.start();
 //scene.add(causticsGroup);
 
-const cameraHelper = new THREE.CameraHelper(causticsCamera);
-//scene.add(cameraHelper);
-scene.add(cameraHelper);
+// const cameraHelper = new THREE.CameraHelper(causticsCamera);
+// //scene.add(cameraHelper);
+// scene.add(cameraHelper);
 
 const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
 renderer.setSize(width, height);
@@ -84,14 +84,16 @@ const temporaryRenderTarget = new THREE.WebGLRenderTarget(width, height);
 
 // const spotLight = new THREE.DirectionalLight(0xffffff , 1);
 
-const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1.8 );
-const spotLight = new THREE.SpotLight( 0xffffff, 200, 25, 0.53, 1, 1 );
+const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0xffffff, 3 );
+const spotLight = new THREE.SpotLight( 0xffffff, 1000, 25, 0.53, 1, 1 );
 spotLight.position.set( 0, 0, 20 );
+spotLight.map = temporaryRenderTarget.texture;
+spotLight.castShadow = true;
 // spotLight.shadow.mapSize.width = 1024;
 // spotLight.shadow.mapSize.height = 1024;
-// spotLight.shadow.camera.near = 0.1;
-// spotLight.shadow.camera.far = 100;
-//spotLight.shadow.focus = 1;
+spotLight.shadow.camera.near = 0.1;
+spotLight.shadow.camera.far = 100;
+spotLight.shadow.focus = 1;
 
 
 scene.add(spotLight);
@@ -223,6 +225,7 @@ const coralLoaded = new Promise((resolve, reject) => {
           if (child instanceof THREE.Mesh)
             envGeometries.push(child.geometry);
             child.receiveShadow = true;
+            child.castShadow = true;
         });
         model.receiveShadow = true;
         //coralreef = gltf.scene.geometries;
@@ -246,6 +249,7 @@ const coralLoaded = new Promise((resolve, reject) => {
 
 let animationClips = [];
 
+let monsterMixer;
 let monsterMesh = new THREE.Mesh();
 let clownfishMesh;
 let bluetangMesh = new THREE.Mesh();
@@ -261,11 +265,28 @@ const monsterLoaded = new Promise((resolve, reject) => {
     monsterMesh.scale.set(5, 5, 5);
     monsterMesh.castShadow = true;
     monsterMesh.name = 'Monster';
+    monsterMesh.traverse( function( child ) { 
 
-    var monster = clone(monsterMesh);
-    monster.position.set(0, 0, -5);
-    monster.castShadow = true;
-    //scene.add(monster);
+      if ( child.isMesh ) {
+  
+          child.castShadow = true;
+          child.receiveShadow = true;
+  
+      }
+    });
+
+    // var monster = clone(monsterMesh);
+    // monster.position.set(0, -30, -5);
+    // scene.add(monster);
+    // const monsterTween = new TWEEN.Tween(monster.position);
+    // monsterTween.to({y: 30}, 50000).repeat(Infinity)
+    // monsterTween.start();
+
+    // monsterMixer = new THREE.AnimationMixer( monster );
+
+    // const clip = THREE.AnimationClip.findByName( animationClips, 'Armature.002' );
+    // const action = monsterMixer.clipAction( clip );
+    // action.play();
     //scene.add(monsterMesh);
       //scene.add(model);
   },
@@ -346,6 +367,8 @@ const blueTangFishLoaded = new Promise((resolve, reject) => {
   
   } );
     createBlueTangFish(7, new THREE.Vector3(0, 0, 0), 1);
+    createBlueTangFish(6, new THREE.Vector3(-3, 4, 0), 1);
+    createBlueTangFish(8, new THREE.Vector3(2, -3, 0), 1);
 },
 
 // called while loading is progressing
@@ -467,12 +490,9 @@ const sand_texture = textureLoader.load('textures/sand_texture_2.jpg' );
 
 const white_texture = textureLoader.load('textures/caustics_texture.png' );
 const caustics_texture = textureLoader.load('textures/CausticsRender_003.png' );
-
-spotLight.map = sand_texture;
-spotLight.castShadow = true;
 // immediately use the texture for material creation 
 
-const material = new THREE.MeshStandardMaterial( { map: sand_texture } );
+const material = new THREE.MeshStandardMaterial( { map: sand_texture  } );
 //material.skinning = true;
 const planeGeometry = new THREE.PlaneGeometry(10, 10);
 const planeMesh = new THREE.Mesh(planeGeometry, material);
@@ -481,7 +501,8 @@ planeMesh.receiveShadow = true;
 //causticsScene.add(planeMesh);
 scene.add(planeMesh);
 
-const materialCaustics = new THREE.MeshStandardMaterial( {  map: caustics_texture});
+
+const materialCaustics = new THREE.MeshStandardMaterial( {  map: caustics_texture, transparent: true });
 const causticsMesh = new THREE.Mesh(planeGeometry, materialCaustics);
 causticsMesh.position.set(5, 0, 5);
 causticsScene.add(causticsMesh);
@@ -512,7 +533,7 @@ function animate() {
   renderer.clear();
   renderer.setClearColor(0x194df7);
   //renderer.render(causticsScene, causticsCamera);
-  renderer.render(scene, camera);
+  //renderer.render(scene, camera);
   const delta = clock.getDelta();
   fishGroup.forEach(fish => {
 
@@ -536,9 +557,11 @@ function animate() {
     }
 
     fish.mixer.update(delta);
+    if (monsterMixer != undefined)
+      monsterMixer.update(delta);
     //fish.fishMesh.lookAt(new THREE.Vector3(-fish.destPos.x, fish.destPos.y, fish.destPos.z));
   });
-  //composer.render();
+  composer.render();
   //renderer.render(scene, camera)
 
   controls.update();
