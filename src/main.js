@@ -75,8 +75,8 @@ const temporaryRenderTarget = new THREE.WebGLRenderTarget(width, height);
 
 // const spotLight = new THREE.DirectionalLight(0xffffff , 1);
 
-const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0x080820, 15 );
-const spotLight = new THREE.SpotLight( 0xffffff, 200, 25, 0.53, 1, 1 );
+const directLightCaustics = new THREE.HemisphereLight( 0xffffff, 0x080820, 5.5 );
+const spotLight = new THREE.SpotLight( 0xffffff, 1000, 25, 0.53, 1, 1 );
 spotLight.position.set( 0, 0, 20 );
 
 
