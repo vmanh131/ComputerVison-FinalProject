@@ -99,8 +99,8 @@ spotLight.shadow.focus = 1;
 scene.add(spotLight);
 causticsScene.add(directLightCaustics)
 
-const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(spotLightHelper);
+// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(spotLightHelper);
 
 // Create mouse Controls
 const controls = new OrbitControls(camera, renderer.domElement);
